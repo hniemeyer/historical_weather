@@ -16,7 +16,10 @@ async fn main() -> Result<()> {
     let tmp_dir = Builder::new().prefix("historical_weather").tempdir()?;
     let response = reqwest::get(dwd_url).await?;
     let toc = response.text().await?;
-    for cap in temperature_hourly_file_re.captures_iter(&toc) {
+    for cap in temperature_hourly_file_re
+        .captures_iter(&toc)
+        .filter(|c| &c["station_id"] == station_id_osna)
+    {
         println!("Downloading {}", &cap["file_name"]);
         let fname = tmp_dir.path().join(&cap["file_name"]);
         let mut dest = File::create(fname)?;
