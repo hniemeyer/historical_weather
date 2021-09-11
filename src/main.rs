@@ -1,7 +1,7 @@
 use anyhow::Result;
 use regex::Regex;
-use std::fs::File;
-use std::io::copy;
+use std::fs::{self, File};
+use std::io::Write;
 use tempfile::Builder;
 
 #[tokio::main]
@@ -22,12 +22,19 @@ async fn main() -> Result<()> {
     {
         println!("Downloading {}", &cap["file_name"]);
         let fname = tmp_dir.path().join(&cap["file_name"]);
-        let mut dest = File::create(fname)?;
-        let download_url = format!("{}/{}", dwd_url, &cap["file_name"]);
-        let download_response = reqwest::get(download_url).await?;
-        let content = download_response.text().await?;
-        copy(&mut content.as_bytes(), &mut dest)?;
-        println!("DONE")
+        {
+            let mut dest = File::create(&fname)?;
+            let download_url = format!("{}/{}", dwd_url, &cap["file_name"]);
+            let download_response = reqwest::get(download_url).await?;
+            let content = download_response.bytes().await?;
+            dest.write_all(&content)?;
+        }
+        println!("DONE");
+        println!("Unzipping");
+        let file = fs::File::open(&fname)?;
+        let mut archive = zip::ZipArchive::new(file).unwrap();
+        archive.extract(tmp_dir.path())?;
+        println!("DONE");
     }
 
     Ok(())
