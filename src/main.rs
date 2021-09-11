@@ -22,19 +22,23 @@ async fn main() -> Result<()> {
     {
         println!("Downloading {}", &cap["file_name"]);
         let fname = tmp_dir.path().join(&cap["file_name"]);
-        {
-            let mut dest = File::create(&fname)?;
-            let download_url = format!("{}/{}", dwd_url, &cap["file_name"]);
-            let download_response = reqwest::get(download_url).await?;
-            let content = download_response.bytes().await?;
-            dest.write_all(&content)?;
-        }
+        let mut dest = File::create(&fname)?;
+        let download_url = format!("{}/{}", dwd_url, &cap["file_name"]);
+        let download_response = reqwest::get(download_url).await?;
+        let content = download_response.bytes().await?;
+        dest.write_all(&content)?;
         println!("DONE");
         println!("Unzipping");
         let file = fs::File::open(&fname)?;
         let mut archive = zip::ZipArchive::new(file).unwrap();
         archive.extract(tmp_dir.path())?;
         println!("DONE");
+
+        let paths = fs::read_dir(tmp_dir.path())?;
+
+        for path in paths {
+            println!("Name: {}", path?.path().display())
+        }
     }
 
     Ok(())
