@@ -16,29 +16,16 @@ async fn main() -> Result<()> {
     let tmp_dir = Builder::new().prefix("historical_weather").tempdir()?;
     let response = reqwest::get(dwd_url).await?;
     let toc = response.text().await?;
-    let split = toc
-        .split('\n')
-        .filter(|x| x.contains(&format!("stundenwerte_TU_{}", station_id_osna)));
-    for s in split {
-        for cap in temperature_hourly_file_re.captures_iter(s) {
-            println!("{:?}", &cap["file_name"]);
-        }
+    for cap in temperature_hourly_file_re.captures_iter(&toc) {
+        println!("Downloading {}", &cap["file_name"]);
+        let fname = tmp_dir.path().join(&cap["file_name"]);
+        let mut dest = File::create(fname)?;
+        let download_url = format!("{}/{}", dwd_url, &cap["file_name"]);
+        let download_response = reqwest::get(download_url).await?;
+        let content = download_response.text().await?;
+        copy(&mut content.as_bytes(), &mut dest)?;
+        println!("DONE")
     }
 
-    // let mut dest = {
-    //     let fname = response
-    //         .url()
-    //         .path_segments()
-    //         .and_then(|segments| segments.last())
-    //         .and_then(|name| if name.is_empty() { None } else { Some(name) })
-    //         .unwrap_or("tmp.bin");
-
-    //     println!("file to download: '{}'", fname);
-    //     let fname = tmp_dir.path().join(fname);
-    //     println!("will be located under: '{:?}'", fname);
-    //     File::create(fname)?
-    // };
-    // let content = response.text().await?;
-    // copy(&mut content.as_bytes(), &mut dest)?;
     Ok(())
 }
