@@ -33,8 +33,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_correct_toc() {
+    fn test_correct_toc_small() {
         let fake_toc = "stundenwerte_TU_00044_20070401_20201231_hist.zip</a>\n";
+        let correct_res = "stundenwerte_TU_00044_20070401_20201231_hist.zip";
+        let res = find_station_zipfile(fake_toc, "00044");
+        assert_eq!(res, correct_res);
+    }
+
+    #[test]
+    fn test_correct_toc_big() {
+        let fake_toc = "stundenwerte_TU_00044_20070401_20201231_hist.zip</a>\n
+        stundenwerte_TU_00055_20070401_20201231_hist.zip</a>\n
+        stundenwerte_TU_00066_20070401_20201231_hist.zip</a>\n";
         let correct_res = "stundenwerte_TU_00044_20070401_20201231_hist.zip";
         let res = find_station_zipfile(fake_toc, "00044");
         assert_eq!(res, correct_res);
