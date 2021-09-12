@@ -50,5 +50,11 @@ mod tests {
         assert_eq!(res, correct_res);
     }
 
-  
+    #[test]
+    #[should_panic]
+    fn test_wrong_toc() {
+        let fake_toc = "xxxx\n";
+        let _res = find_station_zipfile(fake_toc, "00044");
+    }
+
 }
