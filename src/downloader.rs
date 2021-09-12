@@ -27,3 +27,18 @@ fn find_station_zipfile(toc: &str, station_id: &str) -> String {
     zip[0]["file_name"].to_owned()
 }
 
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_correct_toc() {
+        let fake_toc = "stundenwerte_TU_00044_20070401_20201231_hist.zip</a>\n";
+        let correct_res = "stundenwerte_TU_00044_20070401_20201231_hist.zip";
+        let res = find_station_zipfile(fake_toc, "00044");
+        assert_eq!(res, correct_res);
+    }
+
+  
+}
