@@ -4,14 +4,15 @@ use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+const DWD_URL: &str = "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/historical/";
+
 pub async fn download_zip_archive(download_path: &Path, station_id: &str) -> Result<PathBuf> {
-    let dwd_url = "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/historical/";
-        let response = reqwest::get(dwd_url).await?;
+    let response = reqwest::get(DWD_URL).await?;
     let toc = response.text().await?;
     let zipname = find_station_zipfile(&toc, station_id);
     let fname = download_path.join(&zipname);
     let mut dest = File::create(&fname)?;
-    let download_url = format!("{}/{}", dwd_url, zipname);
+    let download_url = format!("{}/{}", DWD_URL, zipname);
     let download_response = reqwest::get(download_url).await?;
     let content = download_response.bytes().await?;
     dest.write_all(&content)?;
