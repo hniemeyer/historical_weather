@@ -1,5 +1,3 @@
-#![deny(clippy::redundant_pub_crate)]
-
 use anyhow::Result;
 use regex::Regex;
 use std::fs::File;
