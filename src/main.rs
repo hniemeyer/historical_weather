@@ -14,7 +14,6 @@ async fn main() -> Result<()> {
     let mut archive = zip::ZipArchive::new(file).unwrap();
     println!("DONE");
     archive.extract(zipdir)?;
-    
 
     let paths = fs::read_dir(zipdir)?;
 
