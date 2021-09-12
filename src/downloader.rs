@@ -29,7 +29,7 @@ fn find_station_zipfile(toc: &str, station_id: &str) -> String {
 }
 
 #[cfg(test)]
-mod tests {
+mod find_station_zipfile_tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
     use super::*;
 
