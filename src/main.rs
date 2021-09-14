@@ -18,7 +18,11 @@ async fn main() -> Result<()> {
     let paths = fs::read_dir(zipdir)?;
 
     for path in paths {
-        println!("Name: {}", path?.path().display())
+        let path_buf = path.unwrap().path().to_owned();
+        let path_str = path_buf.to_str().unwrap();
+        if path_str.contains("produkt_tu") {
+        println!("{}", path_str)
+        }
     }
 
     Ok(())
