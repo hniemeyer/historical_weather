@@ -1,5 +1,6 @@
 use anyhow::Result;
 use std::fs;
+use std::io;
 use tempfile::Builder;
 
 mod downloader;
@@ -15,15 +16,16 @@ async fn main() -> Result<()> {
     println!("DONE");
     archive.extract(zipdir)?;
 
-    let paths = fs::read_dir(zipdir)?;
+    let paths = fs::read_dir(zipdir)?
+        .map(|res| res.map(|e| e.path()))
+        .collect::<Result<Vec<_>, io::Error>>()?;
 
-    for path in paths {
-        let path_buf = path.unwrap().path().to_owned();
-        let path_str = path_buf.to_str().unwrap();
-        if path_str.contains("produkt_tu") {
-        println!("{}", path_str)
-        }
-    }
+    let item_path = paths
+        .iter()
+        .find(|x| x.to_str().unwrap().contains("produkt_tu"))
+        .unwrap();
+
+    println!("{}", item_path.to_str().unwrap());
 
     Ok(())
 }
