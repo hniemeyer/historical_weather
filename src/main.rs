@@ -3,8 +3,8 @@ use std::fs;
 use std::io;
 use tempfile::Builder;
 
-mod downloader;
 mod data_access;
+mod downloader;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -35,8 +35,10 @@ async fn main() -> Result<()> {
     let mut measurement_vec = Vec::new();
     for result in rdr.records() {
         let record = result?;
-        measurement_vec.push(data_access::TemperatureMeasurement::new(record.get(1).unwrap().to_string(),
-        record.get(3).unwrap().trim().parse::<f32>()?));
+        measurement_vec.push(data_access::TemperatureMeasurement::new(
+            record.get(1).unwrap().to_string(),
+            record.get(3).unwrap().trim().parse::<f32>()?,
+        ));
     }
 
     Ok(())

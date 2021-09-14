@@ -2,12 +2,12 @@ use std::fmt;
 
 pub struct TemperatureMeasurement {
     date: String,
-    measurement: f32
+    measurement: f32,
 }
 
 impl TemperatureMeasurement {
     pub fn new(date: String, measurement: f32) -> Self {
-        Self {date, measurement}
+        Self { date, measurement }
     }
 }
 
