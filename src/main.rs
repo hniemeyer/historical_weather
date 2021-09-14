@@ -27,5 +27,13 @@ async fn main() -> Result<()> {
 
     println!("{}", item_path.to_str().unwrap());
 
+    let mut rdr = csv::ReaderBuilder::new().delimiter(b';').from_path(item_path)?;
+
+    for result in rdr.records() {
+        let record = result?;
+        println!("{:?}", record);
+    }
+
+
     Ok(())
 }
