@@ -79,4 +79,11 @@ mod data_access_tests {
         assert_eq!(res.date(), NaiveDate::from_ymd(2020, 1, 1));
         assert_eq!(res.time(), NaiveTime::from_hms(10, 0, 0));
     }
+
+    #[test]
+    #[should_panic]
+    fn test_wrong_string() {
+        let fake_date = "xxxx".to_owned();
+        let _res = parse_date_string(&fake_date).unwrap();
+    }
 }
