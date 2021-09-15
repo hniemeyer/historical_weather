@@ -1,7 +1,9 @@
 use anyhow::Result;
 use std::fs;
+use std::io;
 use tempfile::Builder;
 
+mod data_access;
 mod downloader;
 
 #[tokio::main]
@@ -15,11 +17,19 @@ async fn main() -> Result<()> {
     println!("DONE");
     archive.extract(zipdir)?;
 
-    let paths = fs::read_dir(zipdir)?;
+    let paths = fs::read_dir(zipdir)?
+        .map(|res| res.map(|e| e.path()))
+        .collect::<Result<Vec<_>, io::Error>>()?;
 
-    for path in paths {
-        println!("Name: {}", path?.path().display())
-    }
+    let item_path = paths
+        .iter()
+        .find(|x| x.to_str().unwrap().contains("produkt_tu"))
+        .unwrap();
+
+    println!("{}", item_path.to_str().unwrap());
+
+    let measurement_vec = data_access::load_data(item_path)?;
+    println!("{}", measurement_vec[0]);
 
     Ok(())
 }
