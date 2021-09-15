@@ -44,5 +44,8 @@ pub fn get_average_temperatures(
         min_temp += res2.into_inner();
     }
     let number_of_years = max_year - min_year + 1;
-    (min_temp / number_of_years as f64, max_temp / number_of_years as f64)
+    (
+        min_temp / number_of_years as f64,
+        max_temp / number_of_years as f64,
+    )
 }
