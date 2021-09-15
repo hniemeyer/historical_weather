@@ -1,12 +1,13 @@
+use chrono::{NaiveDate, NaiveDateTime};
 use std::fmt;
 
 pub struct TemperatureMeasurement {
-    date: String,
+    date: NaiveDateTime,
     measurement: f32,
 }
 
 impl TemperatureMeasurement {
-    pub fn new(date: String, measurement: f32) -> Self {
+    pub fn new(date: NaiveDateTime, measurement: f32) -> Self {
         Self { date, measurement }
     }
 }
