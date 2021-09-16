@@ -128,7 +128,7 @@ mod min_max_temp_at_date_test {
     use approx::assert_relative_eq;
 
     #[test]
-    fn test_correct_two_years() {
+    fn test_correct_two_values() {
         let fake_data = vec![
             TemperatureMeasurement {
                 date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
