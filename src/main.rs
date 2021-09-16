@@ -33,9 +33,12 @@ async fn main() -> Result<()> {
     println!("{}", measurement_vec[0]);
 
     let (min_temp, max_temp) =
-        temperature_calculator::get_average_temperatures(&measurement_vec, 10, 10);
+        temperature_calculator::get_average_temperatures(&measurement_vec, 15, 9);
 
-    println!("{}, {}", min_temp, max_temp);
+    println!(
+        "average min temperature = {}, average max temperature = {}",
+        min_temp, max_temp
+    );
 
     Ok(())
 }
