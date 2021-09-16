@@ -17,6 +17,25 @@ fn get_min_max_year(measurement_vec: &[TemperatureMeasurement]) -> (i32, i32) {
     (min_year, max_year)
 }
 
+fn get_min_max_temp_at_date(
+    measurement_vec: &[TemperatureMeasurement],
+    date: NaiveDate,
+) -> (Option<f64>, Option<f64>) {
+    let res_max = measurement_vec
+        .iter()
+        .filter(|x| x.date.date() == date)
+        .map(|x| OrderedFloat(x.measurement))
+        .max();
+    let return_val_max = res_max.map(|x| x.into_inner());
+    let res_min = measurement_vec
+        .iter()
+        .filter(|x| x.date.date() == date)
+        .map(|x| OrderedFloat(x.measurement))
+        .min();
+    let return_val_min = res_min.map(|x| x.into_inner());
+    (return_val_min, return_val_max)
+}
+
 pub fn get_average_temperatures(
     measurement_vec: &[TemperatureMeasurement],
     day: u32,
@@ -28,25 +47,19 @@ pub fn get_average_temperatures(
     let mut min_temp = 0.0;
     let mut skipped_years: i32 = 0;
     for act_year in min_year..=max_year {
-        let res = measurement_vec
-            .iter()
-            .filter(|x| x.date.date() == NaiveDate::from_ymd(act_year, month, day))
-            .map(|x| OrderedFloat(x.measurement))
-            .max();
-        match res {
-            Some(x) => max_temp += x.into_inner(),
-            None => {
+        let (min_opt, max_opt) =
+            get_min_max_temp_at_date(measurement_vec, NaiveDate::from_ymd(act_year, month, day));
+        match (min_opt, max_opt) {
+            (Some(x), Some(y)) => {
+                max_temp += y;
+                min_temp += x;
+            }
+            (None, None) => {
                 skipped_years += 1;
                 continue;
             }
+            _ => panic!("This should not happen."),
         }
-        let res2 = measurement_vec
-            .iter()
-            .filter(|x| x.date.date() == NaiveDate::from_ymd(act_year, month, day))
-            .map(|x| OrderedFloat(x.measurement))
-            .min()
-            .unwrap();
-        min_temp += res2.into_inner();
     }
     let number_of_years = max_year - min_year + 1 - skipped_years;
     (
@@ -104,5 +117,30 @@ mod min_max_year_tests {
         let (a, b) = get_min_max_year(&fake_date);
         assert_eq!(a, 2019);
         assert_eq!(b, 2019);
+    }
+}
+
+#[cfg(test)]
+mod min_max_temp_at_date_test {
+
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+    use approx::assert_relative_eq;
+
+    #[test]
+    fn test_correct_two_years() {
+        let fake_data = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
+                measurement: 15.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(11, 0, 0),
+                measurement: 6.0,
+            },
+        ];
+        let (a, b) = get_min_max_temp_at_date(&fake_data, NaiveDate::from_ymd(2020, 1, 1));
+        assert_relative_eq!(a.unwrap(), 6.0);
+        assert_relative_eq!(b.unwrap(), 15.0);
     }
 }
