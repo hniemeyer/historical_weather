@@ -10,6 +10,8 @@ mod temperature_calculator;
 #[tokio::main]
 async fn main() -> Result<()> {
     let station_id_osna = "01766";
+    let target_day = 16;
+    let target_month = 9;
     let tmp_dir = Builder::new().prefix("historical_weather").tempdir()?;
     let zipfile = downloader::download_zip_archive(tmp_dir.path(), station_id_osna).await?;
     let zipdir = tmp_dir.path();
@@ -33,7 +35,7 @@ async fn main() -> Result<()> {
     println!("{}", measurement_vec[0]);
 
     let (min_temp, max_temp) =
-        temperature_calculator::get_average_temperatures(&measurement_vec, 15, 9);
+        temperature_calculator::get_average_temperatures(&measurement_vec, target_day, target_month);
 
     println!(
         "average min temperature = {}, average max temperature = {}",
