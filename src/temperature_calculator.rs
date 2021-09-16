@@ -56,3 +56,55 @@ pub fn get_average_temperatures(
         max_temp / number_of_years as f64,
     )
 }
+
+#[cfg(test)]
+mod min_max_year_tests {
+
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_correct_two_years() {
+        let fake_date = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
+                measurement: 5.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2019, 1, 1).and_hms(10, 0, 0),
+                measurement: 5.0,
+            },
+        ];
+        let (a, b) = get_min_max_year(&fake_date);
+        assert_eq!(a, 2019);
+        assert_eq!(b, 2020);
+    }
+
+    #[test]
+    fn test_correct_same_year() {
+        let fake_date = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2019, 1, 1).and_hms(10, 0, 0),
+                measurement: 5.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2019, 1, 1).and_hms(10, 0, 0),
+                measurement: 5.0,
+            },
+        ];
+        let (a, b) = get_min_max_year(&fake_date);
+        assert_eq!(a, 2019);
+        assert_eq!(b, 2019);
+    }
+
+    #[test]
+    fn test_correct_one_year() {
+        let fake_date = vec![TemperatureMeasurement {
+            date: NaiveDate::from_ymd(2019, 1, 1).and_hms(10, 0, 0),
+            measurement: 5.0,
+        }];
+        let (a, b) = get_min_max_year(&fake_date);
+        assert_eq!(a, 2019);
+        assert_eq!(b, 2019);
+    }
+}
