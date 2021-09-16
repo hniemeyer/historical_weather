@@ -178,3 +178,50 @@ mod min_max_temp_at_date_test {
         assert!(!b.is_some());
     }
 }
+
+#[cfg(test)]
+mod average_temp_at_day_tests {
+
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+    use approx::assert_relative_eq;
+
+    #[test]
+    fn test_only_one_year() {
+        let fake_data = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
+                measurement: 15.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(11, 0, 0),
+                measurement: 6.0,
+            },
+        ];
+        let (a, b) = get_average_temperatures(&fake_data, 1, 1);
+        assert_relative_eq!(a, 6.0);
+        assert_relative_eq!(b, 15.0);
+    }
+
+    #[test]
+    fn test_with_skipped_year() {
+        let fake_data = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
+                measurement: 15.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(11, 0, 0),
+                measurement: 6.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2019, 10, 10).and_hms(11, 0, 0),
+                measurement: 6.0,
+            },
+        ];
+        let (a, b) = get_average_temperatures(&fake_data, 1, 1);
+        assert_relative_eq!(a, 6.0);
+        assert_relative_eq!(b, 15.0);
+    }
+
+}
