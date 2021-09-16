@@ -128,7 +128,7 @@ mod min_max_temp_at_date_test {
     use approx::assert_relative_eq;
 
     #[test]
-    fn test_correct_two_values() {
+    fn test_correct_two_different_values() {
         let fake_data = vec![
             TemperatureMeasurement {
                 date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
@@ -142,5 +142,39 @@ mod min_max_temp_at_date_test {
         let (a, b) = get_min_max_temp_at_date(&fake_data, NaiveDate::from_ymd(2020, 1, 1));
         assert_relative_eq!(a.unwrap(), 6.0);
         assert_relative_eq!(b.unwrap(), 15.0);
+    }
+
+    #[test]
+    fn test_correct_two_same_values() {
+        let fake_data = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
+                measurement: 6.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(11, 0, 0),
+                measurement: 6.0,
+            },
+        ];
+        let (a, b) = get_min_max_temp_at_date(&fake_data, NaiveDate::from_ymd(2020, 1, 1));
+        assert_relative_eq!(a.unwrap(), 6.0);
+        assert_relative_eq!(b.unwrap(), 6.0);
+    }
+
+    #[test]
+    fn test_wrong_date_equals_none() {
+        let fake_data = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
+                measurement: 15.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(11, 0, 0),
+                measurement: 6.0,
+            },
+        ];
+        let (a, b) = get_min_max_temp_at_date(&fake_data, NaiveDate::from_ymd(2019, 1, 1));
+        assert!(!a.is_some());
+        assert!(!b.is_some());
     }
 }
