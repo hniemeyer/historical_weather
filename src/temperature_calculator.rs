@@ -224,4 +224,29 @@ mod average_temp_at_day_tests {
         assert_relative_eq!(b, 15.0);
     }
 
+    #[test]
+    fn test_with_two_years() {
+        let fake_data = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(10, 0, 0),
+                measurement: 15.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 1, 1).and_hms(11, 0, 0),
+                measurement: 6.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2019, 1, 1).and_hms(11, 0, 0),
+                measurement: 3.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2019, 1, 1).and_hms(10, 0, 0),
+                measurement: 20.0,
+            },
+        ];
+        let (a, b) = get_average_temperatures(&fake_data, 1, 1);
+        assert_relative_eq!(a, 4.5);
+        assert_relative_eq!(b, 17.5);
+    }
+
 }
