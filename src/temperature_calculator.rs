@@ -62,6 +62,9 @@ pub fn get_average_temperatures(
         }
     }
     let number_of_years = max_year - min_year + 1 - skipped_years;
+    if number_of_years == 0 {
+        panic!("No data for given date available.");
+    }
     (
         min_temp / number_of_years as f64,
         max_temp / number_of_years as f64,
@@ -201,6 +204,22 @@ mod average_temp_at_day_tests {
         let (a, b) = get_average_temperatures(&fake_data, 1, 1);
         assert_relative_eq!(a, 6.0);
         assert_relative_eq!(b, 15.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_only_no_year() {
+        let fake_data = vec![
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 10, 1).and_hms(10, 0, 0),
+                measurement: 15.0,
+            },
+            TemperatureMeasurement {
+                date: NaiveDate::from_ymd(2020, 10, 1).and_hms(11, 0, 0),
+                measurement: 6.0,
+            },
+        ];
+        let (_a, _b) = get_average_temperatures(&fake_data, 1, 1);
     }
 
     #[test]
