@@ -4,12 +4,12 @@ use std::fmt;
 use std::path::Path;
 
 pub struct TemperatureMeasurement {
-    date: NaiveDateTime,
-    measurement: f32,
+    pub date: NaiveDateTime,
+    pub measurement: f64,
 }
 
 impl TemperatureMeasurement {
-    pub fn new(date: NaiveDateTime, measurement: f32) -> Self {
+    pub fn new(date: NaiveDateTime, measurement: f64) -> Self {
         Self { date, measurement }
     }
 }
@@ -31,7 +31,7 @@ pub fn load_data(path: &Path) -> Result<Vec<TemperatureMeasurement>> {
 
         measurement_vec.push(TemperatureMeasurement::new(
             datetime,
-            record.get(3).unwrap().trim().parse::<f32>()?,
+            record.get(3).unwrap().trim().parse::<f64>()?,
         ));
     }
 
