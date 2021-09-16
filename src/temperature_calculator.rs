@@ -267,5 +267,4 @@ mod average_temp_at_day_tests {
         assert_relative_eq!(a, 4.5);
         assert_relative_eq!(b, 17.5);
     }
-
 }
