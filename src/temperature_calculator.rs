@@ -28,7 +28,6 @@ pub fn get_average_temperatures(
     let mut min_temp = 0.0;
     let mut skipped_years: i32 = 0;
     for act_year in min_year..=max_year {
-        println!("Year = {}", act_year);
         let res = measurement_vec
             .iter()
             .filter(|x| x.date.date() == NaiveDate::from_ymd(act_year, month, day))
@@ -38,7 +37,6 @@ pub fn get_average_temperatures(
             Some(x) => max_temp += x.into_inner(),
             None => {
                 skipped_years += 1;
-                println!("Skipping this year.");
                 continue;
             }
         }
