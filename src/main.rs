@@ -1,18 +1,51 @@
 use anyhow::Result;
+use chrono::prelude::*;
+
+use clap::{AppSettings, Clap};
 use std::fs;
 use std::io;
 use tempfile::Builder;
-use clap::{AppSettings, Clap};
 
 mod data_access;
 mod downloader;
 mod temperature_calculator;
 
+#[derive(Clap)]
+#[clap(version = "0.1", author = "Hendrik N.")]
+#[clap(setting = AppSettings::ColoredHelp)]
+struct Opts {
+    /// Sets the day to query. Default value is zero which will be intepreted as today's day
+    #[clap(short, long, default_value = "0")]
+    day: u32,
+    /// Sets the month to query. Default value is zero which will be intepreted as today's month
+    #[clap(short, long, default_value = "0")]
+    month: u32,
+}
+
+fn handle_cli_opt(opts: Opts) -> (u32, u32) {
+    let local_now: DateTime<Local> = Local::now();
+    match (opts.day, opts.month) {
+        (0, 0) => {
+             (local_now.day(), local_now.month())
+        }
+        (0, x) => {
+            (local_now.day(), x)
+        }
+        (x, 0) => {
+            (x, local_now.month())
+        }
+        (x, y) => {
+            (x, y)
+        }
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
+    let opts: Opts = Opts::parse();
+    let (target_day, target_month) = handle_cli_opt(opts);
+
     let station_id_osna = "01766";
-    let target_day = 16;
-    let target_month = 9;
     let tmp_dir = Builder::new().prefix("historical_weather").tempdir()?;
     let zipfile = downloader::download_zip_archive(tmp_dir.path(), station_id_osna).await?;
     let zipdir = tmp_dir.path();
@@ -38,8 +71,8 @@ async fn main() -> Result<()> {
     );
 
     println!(
-        "average min temperature = {}, average max temperature = {}",
-        min_temp, max_temp
+        "date= {}-{} average min temperature = {}, average max temperature = {}",
+        target_day, target_month, min_temp, max_temp
     );
 
     Ok(())
