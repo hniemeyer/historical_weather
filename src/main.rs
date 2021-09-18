@@ -2,6 +2,7 @@ use anyhow::Result;
 use std::fs;
 use std::io;
 use tempfile::Builder;
+use clap::{AppSettings, Clap};
 
 mod data_access;
 mod downloader;
