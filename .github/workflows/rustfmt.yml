@@ -1,4 +1,4 @@
-name: Rust-Format
+name: RustFormat
 on:
   pull_request:
   push:
