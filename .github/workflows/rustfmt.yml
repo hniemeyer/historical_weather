@@ -22,8 +22,8 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
       with:
-      ref: ${{ github.event.pull_request.head.sha }}
-      fetch-depth: 20
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 20
     
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
