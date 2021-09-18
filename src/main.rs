@@ -25,18 +25,10 @@ struct Opts {
 fn handle_cli_opt(opts: Opts) -> (u32, u32) {
     let local_now: DateTime<Local> = Local::now();
     match (opts.day, opts.month) {
-        (0, 0) => {
-             (local_now.day(), local_now.month())
-        }
-        (0, x) => {
-            (local_now.day(), x)
-        }
-        (x, 0) => {
-            (x, local_now.month())
-        }
-        (x, y) => {
-            (x, y)
-        }
+        (0, 0) => (local_now.day(), local_now.month()),
+        (0, x) => (local_now.day(), x),
+        (x, 0) => (x, local_now.month()),
+        (x, y) => (x, y),
     }
 }
 
