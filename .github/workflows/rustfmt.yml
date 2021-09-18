@@ -1,0 +1,30 @@
+name: Rust-Format
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+      with:
+      ref: ${{ github.event.pull_request.head.sha }}
+      fetch-depth: 20
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+        components: rustfmt, rust-src
+    
+    - name: Cache Dependencies
+      uses: Swatinem/rust-cache@ce325b60658c1b38465c06cc965b79baf32c1e72
+
+    - name: Format
+      run: cargo fmt --all -- --check
