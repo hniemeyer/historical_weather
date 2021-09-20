@@ -5,6 +5,24 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 const DWD_URL: &str = "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/historical/";
+const STATION_DESCR_URL: &str = "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/air_temperature/historical/TU_Stundenwerte_Beschreibung_Stationen.txt";
+
+pub async fn get_station_id_from_name(station_name: &str) -> Result<String> {
+    let response = reqwest::get(STATION_DESCR_URL).await?;
+    let station_info = response.text_with_charset("ascii").await?;
+    let station_info = station_info.split('\n').skip(2).collect::<String>();
+    println!("{}", station_info);
+    let station_dir_re = Regex::new(r"^(?P<station_id>[0-9]{5}) (?P<from>[0-9]{8}) (?P<until>[0-9]{8})\s+(?P<elevation>-?[0-9]{1,4})\s+(?P<lat>[45][0-9]\.[0-9]{4})\s+(?P<lon>[1]?[0-9]\.[0-9]{4})\s+(?P<station_name>[A-ZÄ-Ü].*\S)\s+(?P<state>[A-Z].*\S)").unwrap();
+    for cc in station_dir_re.captures_iter(&station_info) {
+        println!("{:#?}", &cc["station_id"]);
+    }
+    let station_match = station_dir_re
+        .captures_iter(&station_info)
+        .filter(|c| &c["station_name"] == station_name)
+        .take(1)
+        .collect::<Vec<_>>();
+        Ok(station_match[0]["station_id"].to_owned())
+}
 
 pub async fn download_zip_archive(download_path: &Path, station_id: &str) -> Result<PathBuf> {
     let response = reqwest::get(DWD_URL).await?;

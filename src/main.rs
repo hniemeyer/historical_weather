@@ -37,9 +37,9 @@ async fn main() -> Result<()> {
     let opts: Opts = Opts::parse();
     let (target_day, target_month) = handle_cli_opt(opts);
 
-    let station_id_osna = "01766";
+    let station_id_osna = downloader::get_station_id_from_name("Osnabrück").await?;
     let tmp_dir = Builder::new().prefix("historical_weather").tempdir()?;
-    let zipfile = downloader::download_zip_archive(tmp_dir.path(), station_id_osna).await?;
+    let zipfile = downloader::download_zip_archive(tmp_dir.path(), &station_id_osna).await?;
     let zipdir = tmp_dir.path();
     let file = fs::File::open(&zipfile)?;
     let mut archive = zip::ZipArchive::new(file).unwrap();
