@@ -16,7 +16,7 @@ pub fn get_station_id_by_name(station_name: &str) -> Option<String> {
 
 pub fn print_all_station_names() {
     let station_map = build_station_map();
-    for (station, _) in &station_map {
+    for station in station_map.keys() {
         println!("{}", station);
     }
 }
