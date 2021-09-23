@@ -21,9 +21,9 @@ struct Opts {
     /// Sets the month to query. Default value is zero which will be intepreted as today's month
     #[clap(short, long, default_value = "0")]
     month: u32,
-     /// Choose weather station. Default is Osnabrück
-     #[clap(short, long, default_value = "Osnabrück")]
-     station: String,
+    /// Choose weather station. Default is Osnabrück
+    #[clap(short, long, default_value = "Osnabrück")]
+    station: String,
 }
 
 fn handle_cli_opt(opts: &Opts) -> (u32, u32) {
@@ -40,15 +40,14 @@ fn handle_cli_opt(opts: &Opts) -> (u32, u32) {
 async fn main() -> Result<()> {
     let opts: Opts = Opts::parse();
     let (target_day, target_month) = handle_cli_opt(&opts);
-    let station_id = 
-    match stations::get_station_id_by_name(&opts.station) {
+    let station_id = match stations::get_station_id_by_name(&opts.station) {
         None => {
             println!("Could not find station named {}", opts.station);
             println!("Available stations are:");
             stations::print_all_station_names();
             panic!("Error");
         }
-        Some(x) => x
+        Some(x) => x,
     };
     let tmp_dir = Builder::new().prefix("historical_weather").tempdir()?;
     let zipfile = downloader::download_zip_archive(tmp_dir.path(), &station_id).await?;
