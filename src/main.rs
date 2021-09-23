@@ -8,6 +8,7 @@ use tempfile::Builder;
 
 mod data_access;
 mod downloader;
+mod stations;
 mod temperature_calculator;
 
 #[derive(Clap)]
@@ -20,9 +21,12 @@ struct Opts {
     /// Sets the month to query. Default value is zero which will be intepreted as today's month
     #[clap(short, long, default_value = "0")]
     month: u32,
+    /// Choose weather station. Default is Osnabrück
+    #[clap(short, long, default_value = "Osnabrück")]
+    station: String,
 }
 
-fn handle_cli_opt(opts: Opts) -> (u32, u32) {
+fn handle_cli_opt(opts: &Opts) -> (u32, u32) {
     let local_now: DateTime<Local> = Local::now();
     match (opts.day, opts.month) {
         (0, 0) => (local_now.day(), local_now.month()),
@@ -35,11 +39,18 @@ fn handle_cli_opt(opts: Opts) -> (u32, u32) {
 #[tokio::main]
 async fn main() -> Result<()> {
     let opts: Opts = Opts::parse();
-    let (target_day, target_month) = handle_cli_opt(opts);
-
-    let station_id_osna = "01766";
+    let (target_day, target_month) = handle_cli_opt(&opts);
+    let station_id = match stations::get_station_id_by_name(&opts.station) {
+        None => {
+            println!("Could not find station named {}", opts.station);
+            println!("Available stations are:");
+            stations::print_all_station_names();
+            panic!("Error");
+        }
+        Some(x) => x,
+    };
     let tmp_dir = Builder::new().prefix("historical_weather").tempdir()?;
-    let zipfile = downloader::download_zip_archive(tmp_dir.path(), station_id_osna).await?;
+    let zipfile = downloader::download_zip_archive(tmp_dir.path(), &station_id).await?;
     let zipdir = tmp_dir.path();
     let file = fs::File::open(&zipfile)?;
     let mut archive = zip::ZipArchive::new(file).unwrap();
@@ -63,8 +74,8 @@ async fn main() -> Result<()> {
     );
 
     println!(
-        "date= {}-{} average min temperature = {}, average max temperature = {}",
-        target_day, target_month, min_temp, max_temp
+        "Station: {} date= {}-{} average min temperature = {}, average max temperature = {}",
+        opts.station, target_day, target_month, min_temp, max_temp
     );
 
     Ok(())
