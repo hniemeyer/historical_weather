@@ -9,6 +9,7 @@ use tempfile::Builder;
 mod data_access;
 mod downloader;
 mod temperature_calculator;
+mod stations;
 
 #[derive(Clap)]
 #[clap(version = "0.1", author = "Hendrik N.")]
@@ -37,7 +38,7 @@ async fn main() -> Result<()> {
     let opts: Opts = Opts::parse();
     let (target_day, target_month) = handle_cli_opt(opts);
 
-    let station_id_osna = downloader::get_station_id_from_name("Großenkneten").await?;
+    let station_id_osna = stations::get_station_id_by_name("Osnabrück").unwrap();
     let tmp_dir = Builder::new().prefix("historical_weather").tempdir()?;
     let zipfile = downloader::download_zip_archive(tmp_dir.path(), &station_id_osna).await?;
     let zipdir = tmp_dir.path();
