@@ -2,7 +2,6 @@ use anyhow::Result;
 use chrono::prelude::*;
 
 use clap::{AppSettings, Clap};
-use core::panic;
 use std::fs;
 use std::io;
 use tempfile::Builder;
