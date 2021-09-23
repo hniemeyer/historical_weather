@@ -8,8 +8,8 @@ use tempfile::Builder;
 
 mod data_access;
 mod downloader;
-mod temperature_calculator;
 mod stations;
+mod temperature_calculator;
 
 #[derive(Clap)]
 #[clap(version = "0.1", author = "Hendrik N.")]
